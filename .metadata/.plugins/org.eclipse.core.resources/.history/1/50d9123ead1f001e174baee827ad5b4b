@@ -1,0 +1,2 @@
+server.port=95
+implementation 'org.springframework.boot:spring-boot-starter-web:2.7.12'

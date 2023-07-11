@@ -1,0 +1,23 @@
+package study.querydsl;
+
+import javax.persistence.EntityManager;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+
+import study.querydsl.Entity.TestEntity;
+
+@SpringBootTest
+class QuerydslApplicationTests {
+
+	@Autowired
+	EntityManager em;
+	
+	@Test
+	void contextLoads() {
+		TestEntity hello = new TestEntity();
+		em.persist(hello);
+	}
+
+}
