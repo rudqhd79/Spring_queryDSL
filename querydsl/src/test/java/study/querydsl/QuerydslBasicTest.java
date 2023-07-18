@@ -1,9 +1,12 @@
 package study.querydsl;
 
 import com.querydsl.core.QueryResults;
+import com.querydsl.core.Tuple;
+import com.querydsl.core.types.EntityPath;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import static org.assertj.core.api.Assertions.*;
-import static study.querydsl.Entity.QMember.*;
+import static study.querydsl.Entity.QMember.member;
+import static study.querydsl.Entity.QTeam.team;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -154,5 +157,41 @@ public class QuerydslBasicTest {
         assertThat(result.getOffset()).isEqualTo(1);
         assertThat(result.getResults().size()).isEqualTo(2);
     }
+    @Test
+    public void aggregation() {
+        List<Tuple> result = queryFactory
+                .select(
+                        member.count(),
+                        member.age.sum(),
+                        member.age.avg(),
+                        member.age.max(),
+                        member.age.min()
+                )
+                .from(member)
+                .fetch();
+        Tuple tuple = result.get(0);
+        assertThat(tuple.get(member.count())).isEqualTo(4);
+        assertThat(tuple.get(member.count())).isEqualTo(100);
+        assertThat(tuple.get(member.count())).isEqualTo(25);
+        assertThat(tuple.get(member.count())).isEqualTo(40);
+        assertThat(tuple.get(member.count())).isEqualTo(10);
+    }
 
+    @Test
+    public void group() throws Exception {
+        List<Tuple> result = queryFactory
+                .select(team.name, member.age.avg())
+                .from(member)
+                .join(member.team, team)
+                .groupBy(team.name)
+                .fetch();
+        Tuple teamATuple = result.get(0);
+        Tuple teamBTuple = result.get(1);
+
+        assertThat(teamATuple.get(team.name)).isEqualTo("teamA");
+        assertThat(teamATuple.get(member.age.avg())).isEqualTo(15.0);
+
+        assertThat(teamBTuple.get(team.name)).isEqualTo("teamB");
+        assertThat(teamBTuple.get(member.age.avg())).isEqualTo(35.0);
+    }
 }
